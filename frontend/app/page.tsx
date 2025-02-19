@@ -3,7 +3,7 @@ import useWebSocket from "./hooks/useWebSocket";
 import { FormEvent, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
+import Cookies from "js-cookie";
 export default function Home() {
   const socket = useWebSocket();
   const [message, setMessage] = useState('');
@@ -12,7 +12,7 @@ export default function Home() {
    
    useEffect(() => {
   
-
+    
     socket.connect();
 
     socket.on('connect', () => {
@@ -34,6 +34,10 @@ export default function Home() {
     socket.on('connection', (data: string) => {
       setMessages(prev => [...prev, { message: data, clientId: 'System', type: 'connection' }]);
     });
+    socket.on('uniqueId', (uid)=>{console.log(` your uid is ${uid}` )
+    Cookies.set("uid",uid)
+    
+  })
 
     socket.on('disconnection', (data: string) => {
       setMessages(prev => [...prev, { message: data, clientId: 'System', type: 'disconnection' }]);
@@ -56,7 +60,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen mx-auto md:w-2/5">
       <div className="fixed top-0 md:w-2/5 w-full bg-gray-800 text-white h-14 font-bold flex items-center justify-center shadow-md">
-        CHAT APP of {clientId}
+        CHAT APP
       </div>
 
       {/* Messages Container */}
