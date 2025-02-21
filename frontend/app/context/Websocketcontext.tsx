@@ -5,7 +5,7 @@ import { io, Socket } from "socket.io-client";
 type Propstype = {
     children: ReactNode;
 }
-export const socket = io('http://192.168.0.38:3000')
+export const socket = io('http://192.168.0.36:3000')
 export const webSocketContext = createContext<Socket>(socket)
 
 

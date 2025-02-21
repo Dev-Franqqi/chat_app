@@ -1,102 +1,47 @@
 'use client'
-import useWebSocket from "./hooks/useWebSocket";
-import { FormEvent, useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Cookies from "js-cookie";
-export default function Home() {
-  const socket = useWebSocket();
-  const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<{ message: string; clientId: string; type: string }[]>([]);
-  const [clientId, setClientId] = useState<string | null>(null);
-   
-   useEffect(() => {
-  
-    
-    socket.connect();
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import {useRouter} from 'next/navigation'
+import Cookies from "js-cookie"
+export default function Startpage(){
+    const router = useRouter()
+    const [error,setError] = useState('')
 
-    socket.on('connect', () => {
-      console.log("Connected to gateway");
-    });
-
-    // Receive and store the client ID
-     socket.on('your_id', (id: string) => {
-      setClientId(id)
-      console.log(clientId)
-
-     })
-
-    socket.on('message', (data: { message: string; clientId: string }) => {
-      // setMessages(prev => [...prev, { ...data}]);
-      setMessages(prev=>[...prev,{...data,type:'message' }])
-    });
-
-    socket.on('connection', (data: string) => {
-      setMessages(prev => [...prev, { message: data, clientId: 'System', type: 'connection' }]);
-    });
-    socket.on('uniqueId', (uid)=>{console.log(` your uid is ${uid}` )
-    Cookies.set("uid",uid)
-    
-  })
-
-    socket.on('disconnection', (data: string) => {
-      setMessages(prev => [...prev, { message: data, clientId: 'System', type: 'disconnection' }]);
-    });
-
-    return () => {
-      socket.off();
-      socket.disconnect();
-      console.log("Cleanup: Socket disconnected");
-    };
-  },[]);
-
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    socket.emit('message', message);
-    setMessage('');
-  };
-
-  return (
-    <div className="flex flex-col h-screen mx-auto md:w-2/5">
-      <div className="fixed top-0 md:w-2/5 w-full bg-gray-800 text-white h-14 font-bold flex items-center justify-center shadow-md">
-        CHAT APP
-      </div>
-
-      {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto mt-14 mb-14 p-4 bg-gray-100">
-  {messages.map((message, index) => (
-    <div key={index} className="mb-2">
-      {message.type === 'message' && (
-        <div className="text-gray-500 text-xs mb-1">{message.clientId}</div>
-      )}
-      <div 
-        className={
-          message.type === 'message'
-            ? "bg-blue-500 text-white max-w-[80%] rounded-lg p-2"
-            : message.type === 'connection'
-            ? "text-green-600 text-center text-xs"
-            : "text-center text-red-600 text-xs"
+    const handleRouting = async () => {
+        try {
+          console.log('routing');
+          
+          // Include credentials to ensure cookies are sent and received
+          const res = await fetch('http://192.168.0.36:3000/auth/signup', {
+            method: 'POST', // assuming POST request, change if needed
+            headers: {
+              'Content-Type': 'application/json',
+              // Add any necessary headers here
+            },
+            credentials: 'include',  // Ensure cookies are included in the request
+          });
+          
+          if (!res.ok) {
+            throw new Error('Failed to sign up');
+          }
+      
+          const data = await res.json();
+          
+          // After successfully signing up, navigate to the chat page
+          router.push('/chat');
+        } catch (error) {
+          setError('Failed to login. Please try again.');
+          console.error(error);
         }
-      >
+      };
+      
 
-        {message.message}
-      </div>
-    </div>
-  ))}
-</div>
-
-      {/* Input Form */}
-      <form onSubmit={handleSubmit} className="fixed bottom-0 md:w-2/5 bg-white h-14 flex items-center px-4 shadow-md">
-        <Input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          type="text"
-          placeholder="Type a message..."
-          className="flex-1 p-2 border rounded-lg focus:outline-none"
-        />
-        <Button type="submit" className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">Send</Button>
-      </form>
-    </div>
-  );
+    return(<div>
+        <div className="  md:w-2/5 mx-auto border-2 bg-teal-200 h-screen  flex flex-col items-center justify-center">
+            {error && <p>{error}</p>}
+        <Button onClick={handleRouting} className="mx-auto h-18 rounded-xl w-2/5 animate-pulse bg-white text-black font-semibold">Click to start</Button>
+        </div>
+        
+    
+    </div>)
 }

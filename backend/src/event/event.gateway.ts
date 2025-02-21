@@ -4,36 +4,13 @@ import {Server,Socket} from 'socket.io'
 import * as cookie from 'cookie'
 
 @WebSocketGateway({
-  cors:{origin:['http://localhost:3001','http://192.168.1.182:3001','http://192.168.0.38:3001']}
+  cors:{origin:'*',credentials:true},
 })
 
 export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer()
   server: Server
-  generateRandomNumber(min:number,max:number):number{
-
-    const num = Math.floor(Math.random() * (max-min)) +min
-    return num;
-  }
-
-  generateUniqueUserId():string{
-    const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    const numbers = "0123456789"
-    //each unique Id should contain a letter in its first index and a number in its second index and max length should be 8 
-   let uid = ""
-   uid+= alphabets.charAt(this.generateRandomNumber(0,alphabets.length))
-   uid+= numbers.charAt(this.generateRandomNumber(0,numbers.length))
-
-   for(let i = 2; i<=8;i++){
-    const fullCharacters = alphabets+numbers
-    uid+=fullCharacters.charAt(this.generateRandomNumber(0,fullCharacters.length))
-
-   }
-   return uid
-
-    
-
-  } 
+  
   onModuleInit() {
       console.log('Gateway initialized')
   }
@@ -49,13 +26,11 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
     const uniqueId = cookies["uid"];
   
     if (!uniqueId) {
-      const uid = this.generateUniqueUserId();
-      // Emit the private event to the connected client
-      this.server.to(client.id).emit('uniqueId', uid);
-      console.log(`${client.id} connects to ${uid}`)
+     
+      console.log(`No uid found Signup`)
     }
     else{
-      console.log(`${client.id} already has a connection to ${uniqueId}`)
+      console.log(`${client.id}  has a connection to ${uniqueId}`)
       
     }
   }
@@ -77,9 +52,10 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
     const cookies = client.handshake.headers.cookie ? cookie.parse(client.handshake.headers.cookie) : {}; 
 
-    const userUid  = cookies['uid']// Parse cookies
+    // const userUid  = cookies['uid']// Parse cookies
+    const userUid  = client.handshake.address
     
-    console.log(`Client with uniqueId: ${userUid} and has ${client.id} said ${message}`)
+    console.log(`Client with ip address ${userUid} and has ${client.id} said ${message}`)
     return "Hello world"
   }
  

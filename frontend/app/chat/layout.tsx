@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "../globals.css";
+import { WebSocketProvider } from "../context/Websocketcontext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -12,13 +13,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-    
-      >
+   
+        <WebSocketProvider>
 
         {children}
-      </body>
-    </html>
+        </WebSocketProvider>
+   
   );
 }

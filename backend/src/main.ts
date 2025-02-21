@@ -7,7 +7,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
     // Get ConfigService to access environment variables
     const configService = app.get(ConfigService);
-
+    app.enableCors({
+      origin: '*', 
+      
+      credentials: true, // Allow cookies and other credentials to be sent
+    });
+    
     app.use(cookieParser())
 
     app.use(
