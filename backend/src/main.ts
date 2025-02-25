@@ -8,23 +8,23 @@ async function bootstrap() {
     // Get ConfigService to access environment variables
     const configService = app.get(ConfigService);
     app.enableCors({
-      origin: '*', 
+      origin: "http://192.168.0.182:3001", 
       
       credentials: true, // Allow cookies and other credentials to be sent
     });
     
     app.use(cookieParser())
 
-    app.use(
-      session({
-        secret: configService.get('SESSION_SECRET'),  // Use the session secret from .env
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          secure: false, // Set to true in production with HTTPS
-        },
-      }),)
+    // // app.use(
+    // //   session({
+    // //     secret: configService.get('SESSION_SECRET'),  // Use the session secret from .env
+    // //     resave: false,
+    // //     saveUninitialized: false,
+    // //     cookie: {
+    // //       httpOnly: true,
+    // //       secure: false, // Set to true in production with HTTPS
+    // //     },
+    // //   }),)
   
 
   await app.listen(3000);

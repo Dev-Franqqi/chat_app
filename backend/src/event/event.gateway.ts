@@ -4,7 +4,7 @@ import {Server,Socket} from 'socket.io'
 import * as cookie from 'cookie'
 
 @WebSocketGateway({
-  cors:{origin:'*',credentials:true},
+  cors:{origin:'http://192.168.0.182:3001',credentials :true}
 })
 
 export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -17,23 +17,22 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   handleConnection(client: Socket) {
     console.log(`${client.id} connected to the server`);
-  
-    // Emit the 'connection' event to the new client
-    this.server.emit('connection', `${client.id} connected to the chat`);
-  
-    // Get session ID from the cookies in handshake headers
-    const cookies = cookie.parse(client.handshake.headers.cookie || ''); // Parse cookies
-    const uniqueId = cookies["uid"];
-  
-    if (!uniqueId) {
-     
-      console.log(`No uid found Signup`)
-    }
-    else{
-      console.log(`${client.id}  has a connection to ${uniqueId}`)
+    const cookies = cookie.parse(client.handshake.headers.cookie || "");
+    
+    this.server.emit('connection',`${cookies.uid} connected to the chat`)
+        console.log("Cookies received:", cookies);
+        
+        if (!cookies.uid) {
+          console.log("No session cookie found. Disconnecting...");
+          client.disconnect();
+          return;
+        }
+    
+        console.log(`Client connected with session ID: ${cookies.uid}`);
       
     }
-  }
+    
+  
   
 
 
@@ -48,14 +47,17 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('message')
   handleMessage(client:Socket,message:string):string{
-    this.server.emit('message',{message,clientId:client.id})
+    
+    const cookies = client.handshake.headers.cookie;
+    const parsedCookies = cookie.parse(cookies);
+    const uid = parsedCookies['uid'];
+    this.server.emit('message',{message,clientId:uid})
 
-    const cookies = client.handshake.headers.cookie ? cookie.parse(client.handshake.headers.cookie) : {}; 
+    console.log(`Received message from ${uid}: ${message}`);
 
     // const userUid  = cookies['uid']// Parse cookies
-    const userUid  = client.handshake.address
     
-    console.log(`Client with ip address ${userUid} and has ${client.id} said ${message}`)
+    console.log(`Client with uniqueId ${uid} and has ${client.id} said ${message}`)
     return "Hello world"
   }
  

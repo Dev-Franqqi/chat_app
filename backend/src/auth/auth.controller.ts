@@ -12,17 +12,18 @@ export class AuthController {
   signupUser(@Res() res:Response) {
     try{
        const success = this.authService.signupUser()
+       const uniqueId = this.authService.generateUniqueUserId()
        
-       res.cookie('uid', this.authService.generateUniqueUserId(), {
+       res.cookie('uid',uniqueId , {
         httpOnly: true,  // Prevent access from JavaScript (more secure)
         secure: false,  // Set to false for local development (non-HTTPS)
-        sameSite: 'lax',  // 'lax' is often sufficient for local development
+        sameSite: 'none',  // 'lax' is often sufficient for local development
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
       });
       
       
-      return res.status(200).json({message: success.message})
+      return res.status(200).json({message: success.message,uid:uniqueId})
 
 
     }catch(error){
