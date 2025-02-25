@@ -50,7 +50,7 @@ export default function Startpage() {
 
     useEffect(()=>{
       cookiestate && router.push('/chat')
-    },[cookiestate])
+    },[cookiestate,router])
 
     return (
         <div>
