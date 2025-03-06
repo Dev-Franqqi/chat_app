@@ -18,7 +18,8 @@ export const WebSocketProvider = ({ children }: Propstype) => {
     const cookie = Cookies.get('uid');
     console.log(cookie)
     if (cookie) {
-      const newSocket = io("http://192.168.0.182:3000", { withCredentials: true });
+      
+      const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, { withCredentials: true });
       setSocket(newSocket);
 
       // Cleanup socket when the component unmounts

@@ -8,7 +8,7 @@ async function bootstrap() {
     // Get ConfigService to access environment variables
     const configService = app.get(ConfigService);
     app.enableCors({
-      origin: "http://192.168.0.182:3001", 
+      origin: 'http://192.168.245.29:3001', 
       
       credentials: true, // Allow cookies and other credentials to be sent
     });

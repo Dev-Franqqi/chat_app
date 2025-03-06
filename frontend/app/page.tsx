@@ -19,8 +19,9 @@ export default function Startpage() {
     
         try {
             console.log('Routing started...');
-    
-            const res = await fetch('http://192.168.0.182:3000/auth/signup', {
+            const serverurl  = process.env.NEXT_PUBLIC_SERVER_URL
+            console.log(serverurl)
+            const res = await fetch(`${serverurl}/auth/signup`, {
                 method: 'GET', // Ensure this is the correct method
                 headers: {
                     'Content-Type': 'application/json',

@@ -2,9 +2,11 @@ import { OnModuleInit } from "@nestjs/common";
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import {Server,Socket} from 'socket.io'
 import * as cookie from 'cookie'
+import 'dotenv/config';
+console.log(process.env.FRONTEND_URL)
 
 @WebSocketGateway({
-  cors:{origin:'http://192.168.0.182:3001',credentials :true}
+  cors:{origin:process.env.FRONTEND_URL,credentials :true}
 })
 
 export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect{
@@ -25,6 +27,8 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
         if (!cookies.uid) {
           console.log("No session cookie found. Disconnecting...");
           client.disconnect();
+          this.server.emit('disconnection',`${client.id} disconnected to the chat`)
+
           return;
         }
     
