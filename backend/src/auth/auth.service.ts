@@ -26,8 +26,16 @@ export class AuthService {
       
   
     } 
- signupUser(){
+  anonymousSignin(){
 
     return { message: 'User created successfully' };
  }
+
+ login(emailOrUsername:string,password:string){
+   
+  return { message:"User login successful", payload: { email: emailOrUsername, password: password } };
+ }
+
+
+
 }

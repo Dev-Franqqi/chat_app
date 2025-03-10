@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Res } from '@nestjs/common';
+import { Controller, Get, Body, Res,Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 
@@ -7,17 +7,32 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   
-  // The POST route for signup
-  @Get('signup')
-  signupUser(@Res() res:Response) {
+  @Post('login')
+  login(@Body() user: {usernameOrPassword:string,password:string}, @Res() res:Response) {
     try{
-       const success = this.authService.signupUser()
+      const success = this.authService.login(user.usernameOrPassword,user.password)
+      res.cookie('uid',success.payload.email , {
+        httpOnly: false,  // Prevent access from JavaScript (more secure)
+        secure: false,  // Set to false for local development (non-HTTPS)
+        sameSite: 'lax',  // 'lax' is often sufficient for local development
+        maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
+        path: '/',  // Cookie is available to the entire domain
+      });
+      return res.status(200).json({message:success.message,payload:success.payload})
+    }catch(error){
+      return res.status(400).json({message: error.message})
+    }
+  }
+  @Get('loginAnonymously')
+  signinAnonymously(@Res() res:Response) {
+    try{
+       const success = this.authService.anonymousSignin()
        const uniqueId = this.authService.generateUniqueUserId()
        
        res.cookie('uid',uniqueId , {
-        httpOnly: true,  // Prevent access from JavaScript (more secure)
+        httpOnly: false,  // Prevent access from JavaScript (more secure)
         secure: false,  // Set to false for local development (non-HTTPS)
-        sameSite: 'none',  // 'lax' is often sufficient for local development
+        sameSite: 'lax',  // 'lax' is often sufficient for local development
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
       });
@@ -30,4 +45,7 @@ export class AuthController {
       return res.status(400).json({message: error.message})
     }
   }
+
+
+
 }

@@ -42,7 +42,9 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   handleDisconnect(client:Socket){
     console.log(`${client.id} disconnected from the server`)
-    this.server.emit('disconnection',`${client.id} disconnected to the chat`)
+    const cookies = cookie.parse(client.handshake.headers.cookie || "");
+
+    this.server.emit('disconnection',`${cookies.uid} disconnected from the chat`)
 
 
   }
