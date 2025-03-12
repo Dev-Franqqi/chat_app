@@ -6,19 +6,35 @@ import { Response } from 'express';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+  @Post('signup')
+  signup(@Body() user:{email:string,password:string},@Res() res:Response){
+    try{
+      const payload = this.authService.signup(user.email,user.password)
+      res.cookie('uid',user.email,{
+        httpOnly:false,
+        secure:false,
+        sameSite:'lax',
+        maxAge:24* 60 * 60* 1000,
+        path:'/'
+      })
+      return res.status(200).json({payload})
+    }catch(error){
+      return res.status(400).json({message:error.message})
+    }
+  }
   
   @Post('login')
-  login(@Body() user: {usernameOrPassword:string,password:string}, @Res() res:Response) {
+  async login(@Body() user: {email:string,password:string}, @Res() res:Response) {
     try{
-      const success = this.authService.login(user.usernameOrPassword,user.password)
-      res.cookie('uid',success.payload.email , {
+      const payload = await this.authService.login(user.email,user.password)
+      res.cookie('uid',user.email , {
         httpOnly: false,  // Prevent access from JavaScript (more secure)
         secure: false,  // Set to false for local development (non-HTTPS)
         sameSite: 'lax',  // 'lax' is often sufficient for local development
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
       });
-      return res.status(200).json({message:success.message,payload:success.payload})
+      return res.status(200).json({payload})
     }catch(error){
       return res.status(400).json({message: error.message})
     }

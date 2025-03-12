@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Cookies from "js-cookie"
 export default function Signin(){
-    const [emailOrUsername, setEmailOrUsername] = useState('')
+    const [email, setemail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)   
@@ -22,7 +22,7 @@ export default function Signin(){
         setLoading(true)
         
         try{
-            if(!emailOrUsername || !password){
+            if(!email || !password){
                 throw new Error("Please fill in all Fields")
             }
 
@@ -33,20 +33,24 @@ export default function Signin(){
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    usernameOrPassword: emailOrUsername,
+                    email: email,
                     password: password
                 }),
                 credentials:'include'  });
-           
+                if (!response.ok) {
+                    const errorData = await response.json(); // Read error response
+                    throw new Error(errorData.message || "Something went wrong");
+                }
             const data = await response.json()
             // Cookies.set('uid', data.payload.email, { path: '/' }); 
             console.log(data)
-            setUser(data.payload)
+            // setUser(data.payload)
             setLoading(false)
             return 
             
         }
         catch(error:any){
+            console.log(error)
             setError(error.message)
             
             setLoading(false)
@@ -75,7 +79,7 @@ export default function Signin(){
             <div className="mt-6">
 
             <label className="text-sm" htmlFor="UsernameOrEmail">Username or Email</label>
-            <Input value={emailOrUsername} onChange={(e)=>setEmailOrUsername(e.target.value)} className="border-[#4D5FB1] py-3" type='text' />
+            <Input value={email} onChange={(e)=>setemail(e.target.value)} className="border-[#4D5FB1] py-3" type='text' />
             </div>
             <div className="mt-6">
 
