@@ -1,13 +1,22 @@
 'use client'
+import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation'
+import { usePathname } from "next/navigation"
 import Cookies from "js-cookie"
+
+import Image from 'next/image'
+import Logo from '../components/imgs/biglogo.png'
 export default function Startpage() {
     const router = useRouter();
+    const pathname = usePathname()
     const [error, setError] = useState('');
     const [cookiestate,setCookiestate] = useState(false)
-
+    const [logoPosition,setLogoPosition] = useState({scale:1,y:"0"})
+    const routeToLogin = ()=>{
+        router.push('/signin')
+    }
     const handleRouting = async () => {
         const uid = Cookies.get('uid');
     
@@ -21,7 +30,7 @@ export default function Startpage() {
             console.log('Routing started...');
             const serverurl  = process.env.NEXT_PUBLIC_SERVER_URL
             console.log(serverurl)
-            const res = await fetch(`${serverurl}/auth/signup`, {
+            const res = await fetch(`${serverurl}/auth/loginAnonymously`, {
                 method: 'GET', // Ensure this is the correct method
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,8 +46,6 @@ export default function Startpage() {
             const data = await res.json();
             console.log('Signup successful:', data);
     
-            // Set cookie correctly
-            Cookies.set('uid', data.uid, { path: '/' }); 
             setCookiestate(true);
     
             router.push("/chat"); // Redirect after successful signup
@@ -50,17 +57,37 @@ export default function Startpage() {
     
 
     useEffect(()=>{
-      cookiestate && router.push('/chat')
-    },[cookiestate,router])
+        // Don't know why I did this in the first place
+    // //   cookiestate && router.push('/chat')
+
+    //controls for the animation of the logo on page Navigation
+        if(pathname !== '/' ){
+            setLogoPosition({scale:0.5,y:"-40vh"})
+        }else{
+            setLogoPosition({scale:1,y:"0"})
+        }
+    },[])
 
     return (
-        <div>
-            <div className="md:w-2/5 mx-auto border-2 bg-teal-200 h-screen flex flex-col items-center justify-center">
-                {error && <p className="text-red-600">{error}</p>}
-                <Button onClick={handleRouting} className="mx-auto h-18 rounded-xl w-2/5 animate-pulse bg-white text-black font-semibold">
-                    Click to start
-                </Button>
-            </div>
+        <div className="p-3">
+            <nav className="flex justify-end"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+</svg>
+</nav>
+        <div className="mt-20 text-center">
+            
+            <motion.div initial={{scale:1,y:0}}>
+
+            <Image className="mx-auto" src={Logo} alt="Logo" width={200} height={200} />
+            </motion.div>
+            
+          <p className="font-thin text-xs mt-2">Stay Connected, Anytime.</p>
+       
+       <div className="mt-30">
+              <Button onClick={routeToLogin} className="block mt-4 w-4/5 bg-[#4D5FB1] text-white mx-auto h-10">Sign in to account</Button>
+              <Button onClick={handleRouting} className="block mt-8 w-4/5 mx-auto h-10">Sign in anonymously</Button>
+       </div>   </div>
+       <p className="absolute bottom-0 left-[3%] text-xs font-thin">Created by Franklin Ebi</p>
         </div>
     );
 }

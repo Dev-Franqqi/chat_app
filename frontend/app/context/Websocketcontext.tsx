@@ -11,32 +11,38 @@ export const webSocketContext = createContext<Socket | null>(null);
 
 export const WebSocketProvider = ({ children }: Propstype) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Check for cookie and establish socket connection if present
-    
-    const cookie = Cookies.get('uid');
-    console.log(cookie)
-    if (cookie) {
-      
-      const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, { withCredentials: true });
-      setSocket(newSocket);
+    const checkCookieAndConnect = () => {
+      console.log('checking')
+      const cookie = Cookies.get('uid');
 
-      // Cleanup socket when the component unmounts
-      return () => {
-        newSocket.disconnect();
-      };
-    }
-  }, []);
+      if (cookie && !socket) {
+        const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, { withCredentials: true });
 
-  if (!socket) {
-    // Optionally, you can show a loading indicator while the socket is being initialized
-    return <div>Loading...</div>;
-  }
+        newSocket.on("connect", () => setIsConnected(true));
+        newSocket.on("disconnect", () => setIsConnected(false));
+
+        setSocket(newSocket);
+      } else if (!cookie && socket) {
+        // User logged out, disconnect socket
+        socket.disconnect();
+        setSocket(null);
+        setIsConnected(false);
+      }
+    };
+
+    // Run check immediately and then at intervals
+    checkCookieAndConnect();
+    const interval = setInterval(checkCookieAndConnect, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [socket]); // Re-run effect when `socket` changes
 
   return (
     <webSocketContext.Provider value={socket}>
-      {children}
+      {!socket ? <div>Connecting...</div> : children}
     </webSocketContext.Provider>
   );
 };

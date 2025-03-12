@@ -15,7 +15,9 @@ export default function Home() {
    
    useEffect(() => {
     const uid = Cookies.get('uid')
+    console.log('first')
     console.log(uid)
+    console.log('end')
     if(!uid){
         router.push('/')
       return
