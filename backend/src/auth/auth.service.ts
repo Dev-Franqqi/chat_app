@@ -17,8 +17,8 @@ export class AuthService {
 
   }
 
-  private async comparePassword(hashedPassword:string,password:string){
-    return await bcrypt.compare(hashedPassword,password)
+  private async comparePassword(password:string,hashedPassword:string){
+    return await bcrypt.compare(password,hashedPassword)
   }
 
 
@@ -55,7 +55,7 @@ export class AuthService {
   if(!email || !password){
     throw new BadRequestException("Email or Password missing")
   }
-  const existingUser = this.prisma.user.findUnique({
+  const existingUser = await this.prisma.user.findUnique({
   where:{email},
   })
 
@@ -92,7 +92,7 @@ async login(email:string,password:string){
   if(!user){
     throw new BadRequestException("User does not exist")
   }
-  const matchpassword = await this.comparePassword(user.password,password)
+  const matchpassword = await this.comparePassword(password,user.password)
   if(!matchpassword){
     throw new BadRequestException("Incorrect Password")
   }

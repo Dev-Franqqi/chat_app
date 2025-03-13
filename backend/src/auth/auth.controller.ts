@@ -7,9 +7,9 @@ import { Response } from 'express';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Post('signup')
-  signup(@Body() user:{email:string,password:string},@Res() res:Response){
+  async signup(@Body() user:{email:string,password:string},@Res() res:Response){
     try{
-      const payload = this.authService.signup(user.email,user.password)
+      const payload = await this.authService.signup(user.email,user.password)
       res.cookie('uid',user.email,{
         httpOnly:false,
         secure:false,

@@ -1,19 +1,15 @@
 'use client'
 import { motion } from "motion/react"
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useRouter } from 'next/navigation'
-import { usePathname } from "next/navigation"
 import Cookies from "js-cookie"
 
 import Image from 'next/image'
 import Logo from '../components/imgs/biglogo.png'
 export default function Startpage() {
     const router = useRouter();
-    const pathname = usePathname()
     const [error, setError] = useState('');
-    const [cookiestate,setCookiestate] = useState(false)
-    const [logoPosition,setLogoPosition] = useState({scale:1,y:"0"})
     const routeToLogin = ()=>{
         router.push('/signin')
     }
@@ -46,7 +42,7 @@ export default function Startpage() {
             const data = await res.json();
             console.log('Signup successful:', data);
     
-            setCookiestate(true);
+          
     
             router.push("/chat"); // Redirect after successful signup
         } catch (err: any) {
@@ -56,17 +52,7 @@ export default function Startpage() {
     };
     
 
-    useEffect(()=>{
-        // Don't know why I did this in the first place
-    // //   cookiestate && router.push('/chat')
-
-    //controls for the animation of the logo on page Navigation
-        if(pathname !== '/' ){
-            setLogoPosition({scale:0.5,y:"-40vh"})
-        }else{
-            setLogoPosition({scale:1,y:"0"})
-        }
-    },[])
+   
 
     return (
         <div className="p-3">
@@ -82,6 +68,8 @@ export default function Startpage() {
             </motion.div>
             
           <p className="font-thin text-xs mt-2">Stay Connected, Anytime.</p>
+          {error && <p className="text-red-500 text-center border border-red-500 mt-4 font-medium p-2 rounded-md">{error}</p>}
+
        
        <div className="mt-30">
               <Button onClick={routeToLogin} className="block mt-4 w-4/5 bg-[#4D5FB1] text-white mx-auto h-10">Sign in to account</Button>

@@ -11,7 +11,6 @@ export const webSocketContext = createContext<Socket | null>(null);
 
 export const WebSocketProvider = ({ children }: Propstype) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const checkCookieAndConnect = () => {
@@ -21,15 +20,15 @@ export const WebSocketProvider = ({ children }: Propstype) => {
       if (cookie && !socket) {
         const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, { withCredentials: true });
 
-        newSocket.on("connect", () => setIsConnected(true));
-        newSocket.on("disconnect", () => setIsConnected(false));
+        newSocket.on("connect", () => {});
+        newSocket.on("disconnect", () => {});
 
         setSocket(newSocket);
       } else if (!cookie && socket) {
         // User logged out, disconnect socket
         socket.disconnect();
         setSocket(null);
-        setIsConnected(false);
+        
       }
     };
 
