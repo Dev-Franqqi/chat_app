@@ -25,9 +25,9 @@ async function bootstrap() {
     // //       secure: false, // Set to true in production with HTTPS
     // //     },
     // //   }),)
-  
-    await app.listen(process.env.PORT || 4000, () => {
-      console.log(`Listening on port ${process.env.PORT || 4000}`);
+    const port = process.env.PORT || 4000;
+    await app.listen(port, () => {
+      console.log(`Listening on port ${port}`);
     });
     
 }
