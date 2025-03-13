@@ -1,34 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as session from 'express-session';
 import * as cookieParser from 'cookie-parser';
-import { ConfigService } from '@nestjs/config';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-    // Get ConfigService to access environment variables
-    const configService = app.get(ConfigService);
-    app.enableCors({
-      origin: process.env.FRONTEND_URL, // Allow frontend to connect
-      
-      credentials: true, // Allow cookies and other credentials to be sent
-    });
-    
-    app.use(cookieParser())
 
-    // // app.use(
-    // //   session({
-    // //     secret: configService.get('SESSION_SECRET'),  // Use the session secret from .env
-    // //     resave: false,
-    // //     saveUninitialized: false,
-    // //     cookie: {
-    // //       httpOnly: true,
-    // //       secure: false, // Set to true in production with HTTPS
-    // //     },
-    // //   }),)
-    const port = process.env.PORT || 4000;
-    await app.listen(port, () => {
-      console.log(`Listening on port ${port}`);
-    });
-    
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    credentials: true,
+  });
+
+  app.use(cookieParser());
+
+  const port = process.env.PORT || 4000; // Ensure Render picks up the PORT variable
+  await app.listen(port, '0.0.0.0'); // IMPORTANT: Bind to '0.0.0.0' for Render
+  console.log(`Listening on port ${port}`);
 }
+
 bootstrap();
