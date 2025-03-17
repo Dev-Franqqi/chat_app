@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useRouter } from 'next/navigation'
 import Cookies from "js-cookie"
-import { UserData } from "./signup/page"
 import Image from 'next/image'
 import Logo from '../components/imgs/biglogo.png'
 export default function Startpage() {
