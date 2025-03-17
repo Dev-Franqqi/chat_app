@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { useState } from "react"
 import { useRouter } from 'next/navigation'
 import Cookies from "js-cookie"
-
+import { UserData } from "./signup/page"
 import Image from 'next/image'
 import Logo from '../components/imgs/biglogo.png'
 export default function Startpage() {
@@ -39,8 +39,9 @@ export default function Startpage() {
                 throw new Error(`Error ${res.status}: ${errorMessage}`);
             }
     
-            const data = await res.json();
+            const data:UserData = await res.json();
             console.log('Signup successful:', data);
+            Cookies.set('uid',data.payload.user.email)
     
           
     
