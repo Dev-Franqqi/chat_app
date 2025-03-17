@@ -39,9 +39,9 @@ export default function Startpage() {
                 throw new Error(`Error ${res.status}: ${errorMessage}`);
             }
     
-            const data:UserData = await res.json();
+            const data = await res.json();
             console.log('Signup successful:', data);
-            Cookies.set('uid',data.payload.user.email)
+            Cookies.set('uid',data.uid)
     
           
     
