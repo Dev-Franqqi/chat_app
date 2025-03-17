@@ -12,8 +12,8 @@ export class AuthController {
       const payload = await this.authService.signup(user.email,user.password)
       res.cookie('uid',user.email,{
         httpOnly:false,
-        secure:false,
-        sameSite:'lax',
+        secure:true,
+        sameSite:'none',
         maxAge:24* 60 * 60* 1000,
         path:'/'
       })
@@ -29,8 +29,8 @@ export class AuthController {
       const payload = await this.authService.login(user.email,user.password)
       res.cookie('uid',user.email , {
         httpOnly: false,  // Prevent access from JavaScript (more secure)
-        secure: false,  // Set to false for local development (non-HTTPS)
-        sameSite: 'lax',  // 'lax' is often sufficient for local development
+        secure: true,  // Set to false for local development (non-HTTPS)
+        sameSite: 'none',  // 'lax' is often sufficient for local development
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
       });
