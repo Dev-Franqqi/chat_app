@@ -40,7 +40,11 @@ export default function Startpage() {
     
             const data = await res.json();
             console.log('Signup successful:', data);
-            Cookies.set('uid',data.uid)
+            Cookies.set('uid',data.uid,{
+                path:'/',
+                sameSite:'None',
+                secure:true
+            })
     
           
     
