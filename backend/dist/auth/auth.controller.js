@@ -24,10 +24,17 @@ let AuthController = class AuthController {
             const payload = await this.authService.signup(user.email, user.password);
             res.cookie('uid', user.email, {
                 httpOnly: false,
-                secure: false,
-                sameSite: 'lax',
+                secure: true,
+                sameSite: 'none',
                 maxAge: 24 * 60 * 60 * 1000,
-                path: '/'
+                path: '/',
+            });
+            res.cookie('token', payload.token, {
+                httpOnly: false,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 24 * 60 * 60 * 1000,
+                path: '/',
             });
             return res.status(200).json({ payload });
         }
@@ -40,8 +47,8 @@ let AuthController = class AuthController {
             const payload = await this.authService.login(user.email, user.password);
             res.cookie('uid', user.email, {
                 httpOnly: false,
-                secure: false,
-                sameSite: 'lax',
+                secure: true,
+                sameSite: 'none',
                 maxAge: 24 * 60 * 60 * 1000,
                 path: '/',
             });
@@ -57,8 +64,8 @@ let AuthController = class AuthController {
             const uniqueId = this.authService.generateUniqueUserId();
             res.cookie('uid', uniqueId, {
                 httpOnly: false,
-                secure: false,
-                sameSite: 'lax',
+                secure: true,
+                sameSite: 'none',
                 maxAge: 24 * 60 * 60 * 1000,
                 path: '/',
             });

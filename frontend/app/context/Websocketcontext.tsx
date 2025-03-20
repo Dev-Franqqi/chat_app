@@ -34,10 +34,9 @@ export const WebSocketProvider = ({ children }: Propstype) => {
 
     // Run check immediately and then at intervals
     checkCookieAndConnect();
-    const interval = setInterval(checkCookieAndConnect, 5000); // Check every 5 seconds
 
-    return () => clearInterval(interval); // Cleanup on unmount
-  }, [socket]); // Re-run effect when `socket` changes
+
+  }, []); // Re-run effect when `socket` changes
 
   return (
     <webSocketContext.Provider value={socket}>

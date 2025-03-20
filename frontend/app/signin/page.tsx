@@ -45,8 +45,8 @@ export default function Signin(){
                     }
                 const data:UserData = await response.json()
                 //setting the cookie manually client side
-                Cookies.set('uid', data.payload.user.email, { path: '/' }); 
-                Cookies.set('token',data.payload.token)
+                // Cookies.set('uid', data.payload.user.email, { path: '/' }); 
+                // Cookies.set('token',data.payload.token)
                 console.log(data)
                 setUser(data)
                 setLoading(false)
