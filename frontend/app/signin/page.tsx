@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { UserData } from "../signup/page"
 import Link from "next/link"
-import Cookies from "js-cookie"
 export default function Signin(){
         const [email, setemail] = useState('')
         const [password, setPassword] = useState('')

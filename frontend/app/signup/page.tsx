@@ -6,7 +6,6 @@ import { FormEvent } from "react"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import Cookies from "js-cookie"
 import Link from "next/link"
 
 export interface UserData {
