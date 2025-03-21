@@ -50,7 +50,7 @@ export class AuthController {
   @Get('loginAnonymously')
   signinAnonymously(@Res() res:Response) {
     try{
-       const success = this.authService.anonymousSignin()
+       const success =  this.authService.anonymousSignin()
        const uniqueId = this.authService.generateUniqueUserId()
        
        res.cookie('uid',uniqueId , {
@@ -59,6 +59,7 @@ export class AuthController {
         sameSite: 'none',  // 'lax' is often sufficient for local development
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
+        domain:"chat-app-b9ay.onrender.com"
       });
       
       

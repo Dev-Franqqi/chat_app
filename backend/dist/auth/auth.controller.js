@@ -68,6 +68,7 @@ let AuthController = class AuthController {
                 sameSite: 'none',
                 maxAge: 24 * 60 * 60 * 1000,
                 path: '/',
+                domain: "chat-app-b9ay.onrender.com"
             });
             return res.status(200).json({ message: success.message, uid: uniqueId });
         }
