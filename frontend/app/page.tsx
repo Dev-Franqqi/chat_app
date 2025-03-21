@@ -8,6 +8,7 @@ import StorageAccessRequest from "@/components/StorageAccessRequest"
 import Image from 'next/image'
 import Logo from '../components/imgs/biglogo.png'
 import Loader from "@/components/Loadercomp"
+import { cookies } from "next/headers";
 export default function Startpage() {
     const router = useRouter();
     const [loading,setLoading] = useState(false)
@@ -61,7 +62,13 @@ export default function Startpage() {
          
              
 
-                router.push('/chat')
+                setTimeout(()=>{
+                    const uid = Cookies.get('uid')
+                    if(uid){
+                        router.push('/chat')
+                    }
+
+                },3000)
             
             
     
