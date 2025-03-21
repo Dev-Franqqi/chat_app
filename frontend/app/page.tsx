@@ -57,17 +57,18 @@ export default function Startpage() {
                 throw new Error(`Error ${res.status}: ${errorMessage}`);
             }
     
+
+            const data = await res.json()
             
          
              
 
-                setTimeout(()=>{
-                    console.log(Cookies.get('uid'))
-                },3000)
+               Cookies.set("uid",data.uid)
             
             
     
             setLoading(false);
+            router.push('/chat')
             
         } catch (err: any) {
             console.error("Login Error:", err);

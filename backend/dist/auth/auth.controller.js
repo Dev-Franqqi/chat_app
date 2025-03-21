@@ -65,7 +65,7 @@ let AuthController = class AuthController {
             res.cookie('uid', uniqueId, {
                 httpOnly: false,
                 secure: true,
-                sameSite: 'lax',
+                sameSite: 'none',
                 maxAge: 24 * 60 * 60 * 1000,
                 path: '/',
                 domain: "chat-app-b9ay.onrender.com"
