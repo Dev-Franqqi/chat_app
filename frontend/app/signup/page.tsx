@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-
+import Loader from "@/components/Loadercomp"
 export interface UserData {
     payload:{
         user:{
@@ -25,6 +25,7 @@ export default function Signup(){
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)   
+    const [loadingMsg,setLoadingMsg] = useState('')
     const [user,setUser] = useState<UserData>()
     const router = useRouter()
     const handleSubmit =async(e:FormEvent<HTMLFormElement>)=>{
@@ -33,6 +34,11 @@ export default function Signup(){
         console.log('submitting')
         setError('')
         setLoading(true)
+
+        const timeoutMessage  = setTimeout(()=>{
+            setLoadingMsg("Hold on! Server is starting up...")
+
+        },20000)
         
         try{
             if(!email || !password){
@@ -50,6 +56,8 @@ export default function Signup(){
                     password: password
                 }),
                 credentials:'include'  });
+
+                clearTimeout(timeoutMessage)
                 if (!response.ok) {
                     const errorData = await response.json(); // Read error response
                     throw new Error(errorData.message || "Something went wrong");
@@ -69,8 +77,12 @@ export default function Signup(){
             console.log(error)
             setError(error.message)
             
+          
+        }
+        finally{
             setLoading(false)
-            return
+            clearTimeout(timeoutMessage)
+
         }
 
     }
@@ -80,7 +92,9 @@ export default function Signup(){
         }
 
     },[user,router])
-    return (<>
+    return (<div className='relative'>
+                    {loading && <Loader msg={loadingMsg} />}
+
         <nav className="flex justify-between p-2 items-center">
             <Image src={Logo} alt='' width={100}/>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -113,5 +127,5 @@ export default function Signup(){
         <p className="absolute bottom-0 left-[3%] text-xs font-thin">Created by Franklin Ebi</p>
     
     </footer>
-    </>)
+    </div>)
 }

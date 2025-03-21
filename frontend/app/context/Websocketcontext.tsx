@@ -36,7 +36,7 @@ export const WebSocketProvider = ({ children }: Propstype) => {
     checkCookieAndConnect();
 
 
-  }, []); // Re-run effect when `socket` changes
+  }, [socket]); // Re-run effect when `socket` changes
 
   return (
     <webSocketContext.Provider value={socket}>
