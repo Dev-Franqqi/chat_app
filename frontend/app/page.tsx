@@ -68,8 +68,9 @@ export default function Startpage() {
                     setError("Failed to retrieve session. Please refresh.");
                     setLoading(false);
                 }
+                console.log(uid||'cant access ')
                 attempts--;
-            }, 500);
+            }, 5000);
         } catch (err: any) {
             console.error("Login Error:", err);
             setError(err.message || "Failed to login. Please try again.");
