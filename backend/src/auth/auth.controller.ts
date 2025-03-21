@@ -54,11 +54,11 @@ export class AuthController {
        const uniqueId = this.authService.generateUniqueUserId()
        
        res.cookie('uid',uniqueId , {
-        httpOnly: false,  // Prevent access from JavaScript (more secure)
-        secure: true,  // Set to false for local development (non-HTTPS)
-        sameSite: 'none',  // 'lax' is often sufficient for local development
-        maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
-        path: '/',  // Cookie is available to the entire domain
+        httpOnly: false,  
+        secure: true, 
+        sameSite: 'lax',  
+        maxAge: 24 * 60 * 60 * 1000, 
+        path: '/',  
         domain:"chat-app-b9ay.onrender.com"
       });
       
