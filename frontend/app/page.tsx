@@ -59,13 +59,11 @@ export default function Startpage() {
     
             
             const uid = Cookies.get('uid')
-            if(uid){
+             
 
                 router.push('/chat')
-            }
-            else{
-                setError("Failed to login. Please try again.");
-            }
+            
+            
     
             setLoading(false);
             
