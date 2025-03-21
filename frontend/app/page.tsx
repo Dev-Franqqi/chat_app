@@ -58,7 +58,7 @@ export default function Startpage() {
             }
     
             
-            const uid = Cookies.get('uid')
+         
              
 
                 router.push('/chat')
