@@ -21,18 +21,17 @@ export default function Startpage() {
     
     const handleRouting = async () => {
         setLoading(true);
-        setError(""); // Clear any previous errors
+        setError(""); // Clear previous errors
     
         const uid = Cookies.get("uid");
     
         if (uid) {
             console.log(`User already logged in with UID: ${uid}`);
             router.push("/chat");
-            setLoading(false);
-            return;
+            return; // No need to set loading false here since we're navigating away
         }
     
-        // Timer to show the "taking longer than expected" message
+        // Show a message if request takes too long
         const timeoutMessage = setTimeout(() => {
             setLoadingMsg("Hold on! Server is starting up...");
         }, 40000); // 40 seconds
@@ -44,9 +43,7 @@ export default function Startpage() {
     
             const res = await fetch(`${serverurl}/auth/loginAnonymously`, {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 credentials: "include",
             });
     
@@ -57,42 +54,41 @@ export default function Startpage() {
                 throw new Error(`Error ${res.status}: ${errorMessage}`);
             }
     
-            
-         
-             
-
-                setTimeout(()=>{
-                    const uid = Cookies.get('uid')
-                    if(uid){
-                        router.push('/chat')
-                    }
-
-                },3000)
-            
-            
-    
-            setLoading(false);
-            
+            // Poll for `uid` every 500ms, max 6 seconds (12 attempts)
+            let attempts = 12;
+            const interval = setInterval(() => {
+                const uid = Cookies.get("uid");
+                if (uid) {
+                    console.log(`UID found: ${uid}`);
+                    clearInterval(interval);
+                    setLoading(false);
+                    router.push("/chat");
+                } else if (attempts <= 0) {
+                    clearInterval(interval);
+                    setError("Failed to retrieve session. Please refresh.");
+                    setLoading(false);
+                }
+                attempts--;
+            }, 500);
         } catch (err: any) {
             console.error("Login Error:", err);
             setError(err.message || "Failed to login. Please try again.");
-        } finally {
             setLoading(false);
+        } finally {
             clearTimeout(timeoutMessage); // Ensure timeout is cleared no matter what
         }
     };
     
+    useEffect(() => {
+        const uid = Cookies.get("uid");
     
-    useEffect(()=>{
-        const uid = Cookies.get('uid')
-       
-        if(uid){
-            console.log(uid)
-            router.push('/chat')
-        }else{
-            setShowStorageAccess(true)
+        if (uid) {
+            console.log(`UID detected on mount: ${uid}`);
+            router.push("/chat");
+        } else {
+            setShowStorageAccess(true);
         }
-    },[router])
+    }, []); // Removed `[router]` dependency to prevent unnecessary re-runs
     
 
    
