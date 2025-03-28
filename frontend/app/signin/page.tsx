@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { UserData } from "../signup/page"
+import Cookies from "js-cookie"
 import Loader from "@/components/Loadercomp"
 import Link from "next/link"
 export default function Signin(){
@@ -49,9 +50,8 @@ export default function Signin(){
                         throw new Error(errorData.message || "Something went wrong");
                     }
                 const data:UserData = await response.json()
-                //setting the cookie manually client side
-                // Cookies.set('uid', data.payload.user.email, { path: '/' }); 
-                // Cookies.set('token',data.payload.token)
+      
+                Cookies.set('token',data.token)
                 console.log(data)
                 setUser(data)
                 setLoading(false)

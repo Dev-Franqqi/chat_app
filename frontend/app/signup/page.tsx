@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import Cookies from "js-cookie"
 import Loader from "@/components/Loadercomp"
 export interface UserData {
-    payload:{
+   
         user:{
 
             id: number;
@@ -18,7 +19,7 @@ export interface UserData {
             createdAt: Date;
         },
         token:string
-    }
+    
 }
 export default function Signup(){
     const [email, setemail] = useState('')
@@ -63,10 +64,7 @@ export default function Signup(){
                     throw new Error(errorData.message || "Something went wrong");
                 }
             const data:UserData = await response.json()
-            //setting the cookie manually client side
-            // console.log(data)
-            // Cookies.set('uid', data.payload.user.email, { path: '/' }); 
-            // Cookies.set('token',data.payload.token)
+            Cookies.set("token",data.token)
             console.log(data)
             setUser(data)
             setLoading(false)

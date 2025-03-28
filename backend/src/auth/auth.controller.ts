@@ -10,22 +10,10 @@ export class AuthController {
   async signup(@Body() user:{email:string,password:string},@Res() res:Response){
     try{
       const payload = await this.authService.signup(user.email,user.password)
-      res.cookie('uid',user.email , {
-        httpOnly: false,  // Prevent access from JavaScript (more secure)
-        secure: true,  // Set to false for local development (non-HTTPS)
-        sameSite: 'none',  // 'lax' is often sufficient for local development
-        maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
-        path: '/',  // Cookie is available to the entire domain
-      });
+     
 
-      res.cookie('token',payload.token, {
-        httpOnly: false,  // Prevent access from JavaScript (more secure)
-        secure: true,  // Set to false for local development (non-HTTPS)
-        sameSite: 'none',  // 'lax' is often sufficient for local development
-        maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
-        path: '/',  // Cookie is available to the entire domain
-      })
-      return res.status(200).json({payload})
+      
+      return res.status(200).json(payload)
     }catch(error){
       return res.status(400).json({message:error.message})
     }
@@ -35,13 +23,7 @@ export class AuthController {
   async login(@Body() user: {email:string,password:string}, @Res() res:Response) {
     try{
       const payload = await this.authService.login(user.email,user.password)
-      res.cookie('uid',user.email , {
-        httpOnly: false,  // Prevent access from JavaScript (more secure)
-        secure: true,  // Set to false for local development (non-HTTPS)
-        sameSite: 'none',  // 'lax' is often sufficient for local development
-        maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
-        path: '/',  // Cookie is available to the entire domain
-      });
+      
       return res.status(200).json(payload)
     }catch(error){
       return res.status(400).json({message: error.message})
