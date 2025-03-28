@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation'
 import Cookies from "js-cookie"
-import StorageAccessRequest from "@/components/StorageAccessRequest"
 import Image from 'next/image'
 import Logo from '../components/imgs/biglogo.png'
 import Loader from "@/components/Loadercomp"
@@ -12,7 +11,7 @@ export default function Startpage() {
     const router = useRouter();
     const [loading,setLoading] = useState(false)
     const [loadingMsg,setLoadingMsg] = useState('')
-    const [showStorageAccess, setShowStorageAccess] = useState(false);
+    const [showName, setShowName] = useState(false);
     const [error, setError] = useState('');
     const routeToLogin = ()=>{
         router.push('/signin')
@@ -61,9 +60,9 @@ export default function Startpage() {
             const data = await res.json()
             
          
-             
+             console.log(data)
 
-               Cookies.set("uid",data.uid)
+               Cookies.set("token",data.token)
             
             
     
@@ -79,19 +78,11 @@ export default function Startpage() {
         }
     };
     
+
     
     useEffect(()=>{
-        const uid = Cookies.get('uid')
-       
-        if(uid){
-            console.log(uid)
-            router.push('/chat')
-        }else{
-            setShowStorageAccess(true)
-        }
-    },[router])
-    
-
+        setShowName(true)
+    })
    
 
     return (
@@ -118,7 +109,7 @@ export default function Startpage() {
        </div>   </div>
           {/* Animate StorageAccessComp when showStorageAccess is true */}
           <AnimatePresence>
-  {showStorageAccess && (
+  {showName && (
     <motion.div
       initial={{ y: 100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -126,13 +117,7 @@ export default function Startpage() {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className="fixed bottom-0 left-0 right-0 bg-white shadow-md p-4 flex items-center justify-between"
     >
-        <div className="flex flex-col gap-y-2">
-
-      <StorageAccessRequest />
-      <Button onClick={() => setShowStorageAccess((false))} className="text-red-500">
-        Close
-      </Button>
-        </div>
+      
       <p className="text-xs font-thin">Created by Franklin Ebi</p>
     </motion.div>
   )}

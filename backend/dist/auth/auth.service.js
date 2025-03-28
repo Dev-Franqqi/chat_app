@@ -44,7 +44,9 @@ let AuthService = class AuthService {
         return uid;
     }
     anonymousSignin() {
-        return { message: 'User created successfully' };
+        const uid = this.generateUniqueUserId();
+        const token = this.jwt.sign({ uid }, { secret: process.env.JWT_SECRET, expiresIn: '3h' });
+        return { message: "Sign in successful", token };
     }
     async signup(email, password) {
         if (!email || !password) {

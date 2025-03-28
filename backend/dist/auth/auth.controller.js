@@ -60,17 +60,8 @@ let AuthController = class AuthController {
     }
     signinAnonymously(res) {
         try {
-            const success = this.authService.anonymousSignin();
-            const uniqueId = this.authService.generateUniqueUserId();
-            res.cookie('uid', uniqueId, {
-                httpOnly: false,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 24 * 60 * 60 * 1000,
-                path: '/',
-                domain: "chat-app-b9ay.onrender.com"
-            });
-            return res.status(200).json({ message: success.message, uid: uniqueId });
+            const payload = this.authService.anonymousSignin();
+            return res.status(200).json(payload);
         }
         catch (error) {
             return res.status(400).json({ message: error.message });

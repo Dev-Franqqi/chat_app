@@ -1,8 +1,14 @@
-import { OnModuleInit } from "@nestjs/common";
+import { BadRequestException, OnModuleInit } from "@nestjs/common";
 import { OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import {Server,Socket} from 'socket.io'
 import * as cookie from 'cookie'
 import 'dotenv/config';
+import { JwtService } from "@nestjs/jwt";
+
+type ValidToken = {
+  uid:string,
+  user?:{email:string,password:string}
+}
 console.log(process.env.FRONTEND_URL)
 
 @WebSocketGateway({
@@ -12,28 +18,23 @@ console.log(process.env.FRONTEND_URL)
 export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect{
   @WebSocketServer()
   server: Server
+  constructor (private readonly jwt:JwtService){}
   
   onModuleInit() {
       console.log('Gateway initialized')
   }
 
   handleConnection(client: Socket) {
-    console.log(`${client.id} connected to the server`);
-    const cookies = cookie.parse(client.handshake.headers.cookie || "");
-    
-    this.server.emit('connection',`${cookies.uid} connected to the chat`)
-        console.log("Cookies received:", cookies);
-        
-        if (!cookies.uid) {
-          console.log("No session cookie found. Disconnecting...");
-          client.disconnect();
-          this.server.emit('disconnection',`${client.id} disconnected to the chat`)
+    const token =`${client.handshake.query.token}`
+    try{
+      const validToken:ValidToken = this.jwt.verify(token,{secret:process.env.JWT_SECRET})
+     
 
-          return;
-        }
-    
-        console.log(`Client connected with session ID: ${cookies.uid}`);
-      
+      this.server.emit('connection',`${validToken.uid} connected to the chat` )
+    }
+    catch(error){
+      client.disconnect()
+    }
     }
     
   
@@ -42,9 +43,19 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   handleDisconnect(client:Socket){
     console.log(`${client.id} disconnected from the server`)
-    const cookies = cookie.parse(client.handshake.headers.cookie || "");
+    const token = `${client.handshake.query.token}` || ""
 
-    this.server.emit('disconnection',`${cookies.uid} disconnected from the chat`)
+    try{
+
+      const validToken = this.jwt.verify(token,{secret:process.env.JWT_SECRET})
+      this.server.emit('disconnection',`${validToken.uid} disconnected from the chat`)
+    }catch(error){
+      console.log("Invalid user disconnected")
+    }
+    
+
+   
+
 
 
   }
@@ -52,19 +63,23 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
   
 
   @SubscribeMessage('message')
-  handleMessage(client:Socket,message:string):string{
+  handleMessage(client:Socket,message:string){
     
-    const cookies = client.handshake.headers.cookie;
-    const parsedCookies = cookie.parse(cookies);
-    const uid = parsedCookies['uid'];
-    this.server.emit('message',{message,clientId:uid})
-
-    console.log(`Received message from ${uid}: ${message}`);
-
-    // const userUid  = cookies['uid']// Parse cookies
+    const token = `${client.handshake.query.token}`;
     
-    console.log(`Client with uniqueId ${uid} and has ${client.id} said ${message}`)
-    return "Hello world"
+    try{
+      const validToken:ValidToken = this.jwt.verify(token,{secret:process.env.JWT_SECRET})
+      this.server.emit('message',{message,clientId:validToken.uid})
+      console.log(`Received message from {uid: ${validToken.uid}, clientId: ${client.id}}: ${message}`);
+
+      
+    }
+    catch(error){
+      console.log('Unauthenticated user cannot send message')
+    }
+
+
+    
   }
  
 }

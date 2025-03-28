@@ -6,10 +6,11 @@ export declare class AuthService {
     constructor(prisma: PrismaService, jwt: JwtService);
     private hashpassword;
     private comparePassword;
-    generateRandomNumber(min: number, max: number): number;
+    private generateRandomNumber;
     generateUniqueUserId(): string;
     anonymousSignin(): {
         message: string;
+        token: string;
     };
     signup(email: string, password: string): Promise<{
         user: {

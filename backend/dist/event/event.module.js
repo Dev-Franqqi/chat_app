@@ -9,11 +9,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventModule = void 0;
 const common_1 = require("@nestjs/common");
 const event_gateway_1 = require("./event.gateway");
+const jwt_1 = require("@nestjs/jwt");
 let EventModule = class EventModule {
 };
 exports.EventModule = EventModule;
 exports.EventModule = EventModule = __decorate([
     (0, common_1.Module)({
+        imports: [
+            jwt_1.JwtModule.register({
+                secret: process.env.JWT_SECRET,
+                signOptions: { expiresIn: '1h' },
+            }),
+        ],
         providers: [event_gateway_1.EventGateway]
     })
 ], EventModule);

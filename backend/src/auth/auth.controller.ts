@@ -42,7 +42,7 @@ export class AuthController {
         maxAge: 24 * 60 * 60 * 1000,  // Optional: Set cookie expiration time (e.g., 1 day)
         path: '/',  // Cookie is available to the entire domain
       });
-      return res.status(200).json({payload})
+      return res.status(200).json(payload)
     }catch(error){
       return res.status(400).json({message: error.message})
     }
@@ -50,20 +50,19 @@ export class AuthController {
   @Get('loginAnonymously')
   signinAnonymously(@Res() res:Response) {
     try{
-       const success =  this.authService.anonymousSignin()
-       const uniqueId = this.authService.generateUniqueUserId()
+       const payload =  this.authService.anonymousSignin()
        
-       res.cookie('uid',uniqueId , {
-        httpOnly: false,  
-        secure: true, 
-        sameSite: 'none',  
-        maxAge: 24 * 60 * 60 * 1000, 
-        path: '/',  
-        domain:"chat-app-b9ay.onrender.com"
-      });
+      // //  res.cookie('uid',uniqueId , {
+      // //   httpOnly: false,  
+      // //   secure: true, 
+      // //   sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      // //   maxAge: 24 * 60 * 60 * 1000, 
+      // //   path: '/',  
+      // //   domain:"chat-app-b9ay.onrender.com"
+      // // });
       
       
-      return res.status(200).json({message: success.message,uid:uniqueId})
+      return res.status(200).json(payload)
 
 
     }catch(error){

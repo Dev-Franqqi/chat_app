@@ -14,24 +14,21 @@ export default function Home() {
   const router =useRouter();
    
    useEffect(() => {
-    const uid = Cookies.get('uid')
-    if(!uid){
+    const token = Cookies.get('token')
+    if(!token){
       router.push('/issue')
     }
-    console.log('first')
-    console.log(uid)
-    console.log('end')
-    if(!uid){
+    
+    if(!token){
         router.push('/')
       return
     }
-    setClientId(uid)
+    setClientId(token)
     
     
     socket?.connect();
 
     socket?.on('connect', () => {
-      console.log(`Connected to the gateway with uniquie ID: `+Cookies.get('uid'));
 
     });
 

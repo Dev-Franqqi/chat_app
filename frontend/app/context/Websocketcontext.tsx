@@ -15,16 +15,16 @@ export const WebSocketProvider = ({ children }: Propstype) => {
   useEffect(() => {
     const checkCookieAndConnect = () => {
       console.log('checking')
-      const cookie = Cookies.get('uid');
+      const token = Cookies.get('token');
 
-      if (cookie && !socket) {
-        const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, { withCredentials: true });
+      if (token && !socket) {
+        const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, {query:{token:token} ,withCredentials: true });
 
         newSocket.on("connect", () => {});
         newSocket.on("disconnect", () => {});
 
         setSocket(newSocket);
-      } else if (!cookie && socket) {
+      } else if (!token && socket) {
         // User logged out, disconnect socket
         socket.disconnect();
         setSocket(null);

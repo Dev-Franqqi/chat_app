@@ -22,7 +22,7 @@ export class AuthService {
   }
 
 
-   generateRandomNumber(min:number,max:number):number{
+  private generateRandomNumber(min:number,max:number):number{
 
       const num = Math.floor(Math.random() * (max-min)) +min
       return num;
@@ -46,10 +46,17 @@ export class AuthService {
       
   
     } 
-  anonymousSignin(){
 
-    return { message: 'User created successfully' };
+  anonymousSignin(){
+    const uid= this.generateUniqueUserId()
+    const token  = this.jwt.sign({uid},{secret:process.env.JWT_SECRET,expiresIn:'3h'})
+
+    return {message:"Sign in successful",token}
+
+    ;
  }
+
+
 
  async signup(email:string,password:string){
   if(!email || !password){
@@ -72,7 +79,7 @@ export class AuthService {
   })
 
   const token = this.jwt.sign({
-    userId:user.id,email
+    uid: email
   },{secret:process.env.JWT_SECRET,expiresIn:"3h"})
   
   return {user,token}
@@ -97,7 +104,7 @@ async login(email:string,password:string){
     throw new BadRequestException("Incorrect Password")
   }
 
-  const token = this.jwt.sign({userId:user.id,email},{secret:process.env.JWT_SECRET,expiresIn:'3h'})
+  const token = this.jwt.sign({uid:email},{secret:process.env.JWT_SECRET,expiresIn:'3h'})
   return {user,token}
 
 }
