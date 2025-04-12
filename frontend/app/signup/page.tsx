@@ -86,7 +86,7 @@ export default function Signup(){
     }
     useEffect(()=>{
         if(user){
-         router.push("/chat")
+         router.push("/chat_homepage")
         }
 
     },[user,router])

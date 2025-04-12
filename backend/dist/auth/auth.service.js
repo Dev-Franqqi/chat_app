@@ -65,7 +65,7 @@ let AuthService = class AuthService {
             }
         });
         const token = this.jwt.sign({
-            userId: user.id, email
+            uid: email
         }, { secret: process.env.JWT_SECRET, expiresIn: "3h" });
         return { user, token };
     }
@@ -83,7 +83,7 @@ let AuthService = class AuthService {
         if (!matchpassword) {
             throw new common_1.BadRequestException("Incorrect Password");
         }
-        const token = this.jwt.sign({ userId: user.id, email }, { secret: process.env.JWT_SECRET, expiresIn: '3h' });
+        const token = this.jwt.sign({ uid: email }, { secret: process.env.JWT_SECRET, expiresIn: '3h' });
         return { user, token };
     }
 };

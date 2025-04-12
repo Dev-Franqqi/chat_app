@@ -4,9 +4,11 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  console.log('FRONTEND_URL:', process.env.DEV_FRONTEND_URL);
 
   app.enableCors({
-    origin: process.env.NODE_ENV==='production'?process.env.FRONTEND_URL:"http://192.168.0.178:3000",
+    origin: process.env.NODE_ENV==='production'?process.env.FRONTEND_URL:process.env.DEV_FRONTEND_URL,
     credentials: true,
   });
 

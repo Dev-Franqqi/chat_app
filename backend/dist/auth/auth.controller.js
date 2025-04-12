@@ -22,21 +22,7 @@ let AuthController = class AuthController {
     async signup(user, res) {
         try {
             const payload = await this.authService.signup(user.email, user.password);
-            res.cookie('uid', user.email, {
-                httpOnly: false,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 24 * 60 * 60 * 1000,
-                path: '/',
-            });
-            res.cookie('token', payload.token, {
-                httpOnly: false,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 24 * 60 * 60 * 1000,
-                path: '/',
-            });
-            return res.status(200).json({ payload });
+            return res.status(200).json(payload);
         }
         catch (error) {
             return res.status(400).json({ message: error.message });
@@ -45,21 +31,15 @@ let AuthController = class AuthController {
     async login(user, res) {
         try {
             const payload = await this.authService.login(user.email, user.password);
-            res.cookie('uid', user.email, {
-                httpOnly: false,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 24 * 60 * 60 * 1000,
-                path: '/',
-            });
-            return res.status(200).json({ payload });
+            return res.status(200).json(payload);
         }
         catch (error) {
             return res.status(400).json({ message: error.message });
         }
     }
-    signinAnonymously(res) {
+    async signinAnonymously(res) {
         try {
+            await new Promise(resolve => setTimeout(resolve, 50000));
             const payload = this.authService.anonymousSignin();
             return res.status(200).json(payload);
         }
@@ -90,7 +70,7 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "signinAnonymously", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),

@@ -68,7 +68,7 @@ __decorate([
 ], EventGateway.prototype, "handleMessage", null);
 exports.EventGateway = EventGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
-        cors: { origin: process.env.FRONTEND_URL, credentials: true }
+        cors: { origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL : process.env.DEV_FRONTEND_URL, credentials: true }
     }),
     __metadata("design:paramtypes", [jwt_1.JwtService])
 ], EventGateway);

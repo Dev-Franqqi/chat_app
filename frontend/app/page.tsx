@@ -34,7 +34,7 @@ export default function Startpage() {
         // Timer to show the "taking longer than expected" message
         const timeoutMessage = setTimeout(() => {
             setLoadingMsg("Hold on! Server is starting up...");
-        }, 40000); // 40 seconds
+        }, 10000); // 40 seconds
     
         try {
             console.log("Routing started...");
@@ -67,7 +67,7 @@ export default function Startpage() {
             
     
             setLoading(false);
-            router.push('/chat')
+            router.push('/chat_homepage')
             
         } catch (err: any) {
             console.error("Login Error:", err);

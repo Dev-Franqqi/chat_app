@@ -30,7 +30,7 @@ export class AuthController {
     }
   }
   @Get('loginAnonymously')
-  signinAnonymously(@Res() res:Response) {
+  async signinAnonymously(@Res() res:Response) {
     try{
        const payload =  this.authService.anonymousSignin()
        

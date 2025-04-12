@@ -12,7 +12,7 @@ type ValidToken = {
 console.log(process.env.FRONTEND_URL)
 
 @WebSocketGateway({
-  cors:{origin:process.env.FRONTEND_URL,credentials :true}
+  cors:{origin:process.env.NODE_ENV==='production'?process.env.FRONTEND_URL:process.env.DEV_FRONTEND_URL,credentials :true}
 })
 
 export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewayDisconnect{

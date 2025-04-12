@@ -11,5 +11,5 @@ export declare class AuthController {
         email: string;
         password: string;
     }, res: Response): Promise<Response<any, Record<string, any>>>;
-    signinAnonymously(res: Response): Response<any, Record<string, any>>;
+    signinAnonymously(res: Response): Promise<Response<any, Record<string, any>>>;
 }
