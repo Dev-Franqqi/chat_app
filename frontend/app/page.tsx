@@ -1,7 +1,7 @@
 'use client'
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
+import {  useState } from "react"
 import { useRouter } from 'next/navigation'
 import Cookies from "js-cookie"
 import Image from 'next/image'
@@ -11,7 +11,7 @@ export default function Startpage() {
     const router = useRouter();
     const [loading,setLoading] = useState(false)
     const [loadingMsg,setLoadingMsg] = useState('')
-    const [showName, setShowName] = useState(false);
+    const showName = false
     const [error, setError] = useState('');
     const routeToLogin = ()=>{
         router.push('/signin')
@@ -80,9 +80,7 @@ export default function Startpage() {
     
 
     
-    useEffect(()=>{
-        setShowName(true)
-    })
+ 
    
 
     return (

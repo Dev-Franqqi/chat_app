@@ -1,8 +1,7 @@
 'use client'
 import { Input } from "./ui/input"
-import { useState } from "react"
 export default function Chatcomp({setActiveComp}:{setActiveComp:React.Dispatch<React.SetStateAction<string>>}){
-    const [chats,setChats] = useState([])
+    const chats =[]
 
     return(
         <main style={{ height: 'calc(var(--vh, 1vh) * 84)' }} className="relative border border-gray-200 rounded-md mt-6 p-2 mx-2 ">

@@ -1,10 +1,9 @@
 'use client'
 import { Input } from "./ui/input"
-import { useState } from "react"
 import { Button } from "./ui/button"
 import { FaAngleLeft } from "react-icons/fa6";
 export default function Searchusercomp({setActiveComp}:{setActiveComp:React.Dispatch<React.SetStateAction<string>>}){
-    const [chats,setChats] = useState([])
+    // const [chats,setChats] = useState([])
 
     return(
         <main style={{ height: 'calc(var(--vh, 1vh) * 84)' }} className="relative border border-gray-200 rounded-md mt-6 p-2 mx-2 ">
