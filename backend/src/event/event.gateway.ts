@@ -5,7 +5,7 @@ import * as cookie from 'cookie'
 import 'dotenv/config';
 import { JwtService } from "@nestjs/jwt";
 
-type ValidToken = {
+export type ValidToken = {
   uid:string,
   user?:{email:string,password:string}
 }

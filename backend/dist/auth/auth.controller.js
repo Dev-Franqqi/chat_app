@@ -39,7 +39,6 @@ let AuthController = class AuthController {
     }
     async signinAnonymously(res) {
         try {
-            await new Promise(resolve => setTimeout(resolve, 50000));
             const payload = this.authService.anonymousSignin();
             return res.status(200).json(payload);
         }
