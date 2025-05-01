@@ -17,5 +17,9 @@ export declare class EventGateway implements OnModuleInit, OnGatewayConnection, 
     onModuleInit(): void;
     handleConnection(client: Socket): void;
     handleDisconnect(client: Socket): void;
-    handleMessage(client: Socket, message: string): void;
+    handleJoinRoom(client: Socket, room: string): void;
+    handleMessage(client: Socket, payload: {
+        room: string;
+        message: string;
+    }): void;
 }

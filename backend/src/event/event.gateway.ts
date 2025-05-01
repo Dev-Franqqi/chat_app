@@ -26,9 +26,13 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   handleConnection(client: Socket) {
     const token =`${client.handshake.query.token}`
+    // // console.log(token)
     try{
       const validToken:ValidToken = this.jwt.verify(token,{secret:process.env.JWT_SECRET})
-     
+      console.log('connected')
+      
+      console.log(`[Socket] ${validToken.uid} connected with id: ${client.id}`);
+
 
       this.server.emit('connection',`${validToken.uid} connected to the chat` )
     }
@@ -43,7 +47,8 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
 
   handleDisconnect(client:Socket){
     console.log(`${client.id} disconnected from the server`)
-    const token = `${client.handshake.query.token}` || ""
+    const token = client.handshake.query?.token as string || "";
+  
 
     try{
 
@@ -61,17 +66,23 @@ export class EventGateway implements OnModuleInit, OnGatewayConnection, OnGatewa
   }
 
   
+  @SubscribeMessage('join_room')
+  handleJoinRoom(client:Socket,room:string ) {
+    client.join(room);
+    console.log(`Socket ${client.id} joined room ${room}`);
+  }
 
-  @SubscribeMessage('message')
-  handleMessage(client:Socket,message:string){
+  @SubscribeMessage('privateMessage')
+  handleMessage(client:Socket,payload:{room:string,message:string}){
     
     const token = `${client.handshake.query.token}`;
+    const {room ,message} = payload
     
     try{
       const validToken:ValidToken = this.jwt.verify(token,{secret:process.env.JWT_SECRET})
-      this.server.emit('message',{message,clientId:validToken.uid})
+      this.server.to(room).emit('privateMessage',{message,clientId:validToken.uid})
       console.log(`Received message from {uid: ${validToken.uid}, clientId: ${client.id}}: ${message}`);
-
+      console.log(`sending message to room ${room}`)
       
     }
     catch(error){

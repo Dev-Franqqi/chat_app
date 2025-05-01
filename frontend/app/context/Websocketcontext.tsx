@@ -1,46 +1,28 @@
-'use client'
-import { createContext, ReactNode, useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import Cookies from "js-cookie";
+import { createContext, ReactNode, useMemo, useState } from "react";
+import { Socket } from "socket.io-client";
 
 type Propstype = {
   children: ReactNode;
 };
 
-export const webSocketContext = createContext<Socket | null>(null);
+type SocketContextType = {
+  socket: Socket | null;
+  setSocket: React.Dispatch<React.SetStateAction<Socket | null>>;
+};
+
+export const webSocketContext = createContext<SocketContextType>({
+  socket: null,
+  setSocket: () => {},
+});
 
 export const WebSocketProvider = ({ children }: Propstype) => {
   const [socket, setSocket] = useState<Socket | null>(null);
 
-  useEffect(() => {
-    const checkCookieAndConnect = () => {
-      console.log('checking')
-      const token = Cookies.get('token');
-
-      if (token && !socket) {
-        const newSocket = io(process.env.NEXT_PUBLIC_SERVER_URL, {query:{token:token} ,withCredentials: true });
-
-        newSocket.on("connect", () => {});
-        newSocket.on("disconnect", () => {});
-
-        setSocket(newSocket);
-      } else if (!token && socket) {
-        // User logged out, disconnect socket
-        socket.disconnect();
-        setSocket(null);
-        
-      }
-    };
-
-    // Run check immediately and then at intervals
-    checkCookieAndConnect();
-
-
-  }, [socket]); // Re-run effect when `socket` changes
+  const value = useMemo(() => ({ socket, setSocket }), [socket]);
 
   return (
-    <webSocketContext.Provider value={socket}>
-      {!socket ? <div>Connecting...</div> : children}
+    <webSocketContext.Provider value={value}>
+      {children}
     </webSocketContext.Provider>
   );
 };

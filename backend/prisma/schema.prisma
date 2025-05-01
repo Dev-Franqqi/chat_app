@@ -11,12 +11,39 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
-model User{
-  id      Int         @id @default(autoincrement())
-  email   String      @unique
-  password String
-  createdAt DateTime  @default(now())
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique                       
+  password  String   
+  createdAt DateTime @default(now())               
+  
+  chatRooms ChatRoom[] 
+  messages  Message[]  
+}
+
+
+model Message {
+  id        Int      @id @default(autoincrement())  
+  content   String  
+  
+  senderId  Int      
+  sender    User     @relation(fields: [senderId], references: [id])  
+  
+  chatRoomId Int     
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])  
+  
+  createdAt DateTime @default(now())  
+}
+
+model ChatRoom {
+  id        Int       @id @default(autoincrement())  
+  name      String    @unique
+  createdAt DateTime  @default(now())            
+  users User[] 
+  messages  Message[]
 }

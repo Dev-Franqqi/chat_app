@@ -5,11 +5,14 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { getUserByEmail } from "./utility/getUserByEmail";
 import { MdOutlineMessage } from "react-icons/md";
 import { useState } from "react";
+import {useRouter} from 'next/navigation'
+import Cookies from 'js-cookie'
 export default function Searchusercomp({setActiveComp}:{setActiveComp:React.Dispatch<React.SetStateAction<string>>}){
     const [email,setEmail] = useState('')
     const [error,setError] = useState('')
     const [loading,setLoading] = useState(false)
     const [foundUser,setFoundUser] = useState<any>('')
+    const router = useRouter()
     // const [chats,setChats] = useState([])
     const handleSubmit = async (e:React.FormEvent<HTMLFormElement>)=>{
         console.log('handleSubmit')
@@ -23,7 +26,13 @@ export default function Searchusercomp({setActiveComp}:{setActiveComp:React.Disp
             return
         }
         try{
-            const searchedUser:{message:string,user:string} = await getUserByEmail(email)
+            const token = Cookies.get('token')
+            if(!token){
+                router.push('/')
+                throw new Error("No token")
+                return 
+            }
+            const searchedUser:{message:string,user:string} = await getUserByEmail(email,token)
            setFoundUser(searchedUser.user)
             setLoading(false)
 
@@ -57,7 +66,7 @@ export default function Searchusercomp({setActiveComp}:{setActiveComp:React.Disp
            <p className="text-green-500 font-semibold text-center">User Found</p>
             
             <div className="flex items-center justify-center h-4/5">
-  <div className="w-full p-2 mx-auto h-fit border shadow-md mt-4 rounded-md flex gap-x-5 items-center">
+  <div onClick={()=>router.push(`/${foundUser}`)} className="cursor-pointer w-full p-2 mx-auto h-fit border shadow-md mt-4 rounded-md flex gap-x-5 items-center">
     <div className="w-14 h-14 rounded-full bg-gray-200"></div>
     {foundUser}
     <MdOutlineMessage className="w-1/5" />

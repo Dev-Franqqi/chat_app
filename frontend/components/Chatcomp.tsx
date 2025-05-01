@@ -14,7 +14,7 @@ export default function Chatcomp({setActiveComp}:{setActiveComp:React.Dispatch<R
             {chats.length===0 && <div className="flex flex-col items-center justify-center h-4/5">
                 
                 <p className="text-xl font-medium">No Chat available</p>
-                <p className="text-[#8670FD] text-sm font-semibold" onClick={()=>setActiveComp('search')}>Start a conversation</p>
+                <p className="text-[#8670FD] text-sm font-semibold cursor-pointer" onClick={()=>setActiveComp('search')}>Start a conversation</p>
                 </div>}
 
         </main>

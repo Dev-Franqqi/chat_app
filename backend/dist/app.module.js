@@ -15,6 +15,7 @@ const config_1 = require("@nestjs/config");
 const auth_module_1 = require("./auth/auth.module");
 const prisma_service_1 = require("./prisma/prisma.service");
 const users_module_1 = require("./users/users.module");
+const chat_module_1 = require("./chat/chat.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -22,7 +23,7 @@ exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [config_1.ConfigModule.forRoot({
                 isGlobal: true
-            }), event_module_1.EventModule, auth_module_1.AuthModule, users_module_1.UsersModule],
+            }), event_module_1.EventModule, auth_module_1.AuthModule, users_module_1.UsersModule, chat_module_1.ChatModule],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, prisma_service_1.PrismaService],
     })

@@ -26,6 +26,8 @@ let EventGateway = class EventGateway {
         const token = `${client.handshake.query.token}`;
         try {
             const validToken = this.jwt.verify(token, { secret: process.env.JWT_SECRET });
+            console.log('connected');
+            console.log(`[Socket] ${validToken.uid} connected with id: ${client.id}`);
             this.server.emit('connection', `${validToken.uid} connected to the chat`);
         }
         catch (error) {
@@ -34,7 +36,7 @@ let EventGateway = class EventGateway {
     }
     handleDisconnect(client) {
         console.log(`${client.id} disconnected from the server`);
-        const token = `${client.handshake.query.token}` || "";
+        const token = client.handshake.query?.token || "";
         try {
             const validToken = this.jwt.verify(token, { secret: process.env.JWT_SECRET });
             this.server.emit('disconnection', `${validToken.uid} disconnected from the chat`);
@@ -43,12 +45,18 @@ let EventGateway = class EventGateway {
             console.log("Invalid user disconnected");
         }
     }
-    handleMessage(client, message) {
+    handleJoinRoom(client, room) {
+        client.join(room);
+        console.log(`Socket ${client.id} joined room ${room}`);
+    }
+    handleMessage(client, payload) {
         const token = `${client.handshake.query.token}`;
+        const { room, message } = payload;
         try {
             const validToken = this.jwt.verify(token, { secret: process.env.JWT_SECRET });
-            this.server.emit('message', { message, clientId: validToken.uid });
+            this.server.to(room).emit('privateMessage', { message, clientId: validToken.uid });
             console.log(`Received message from {uid: ${validToken.uid}, clientId: ${client.id}}: ${message}`);
+            console.log(`sending message to room ${room}`);
         }
         catch (error) {
             console.log('Unauthenticated user cannot send message');
@@ -61,9 +69,15 @@ __decorate([
     __metadata("design:type", socket_io_1.Server)
 ], EventGateway.prototype, "server", void 0);
 __decorate([
-    (0, websockets_1.SubscribeMessage)('message'),
+    (0, websockets_1.SubscribeMessage)('join_room'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [socket_io_1.Socket, String]),
+    __metadata("design:returntype", void 0)
+], EventGateway.prototype, "handleJoinRoom", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('privateMessage'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", void 0)
 ], EventGateway.prototype, "handleMessage", null);
 exports.EventGateway = EventGateway = __decorate([
