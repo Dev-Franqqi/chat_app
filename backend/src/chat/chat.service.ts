@@ -59,5 +59,81 @@ export class ChatService {
    }
 }
 
+async getChatRoomMessages(room:string){
+    if(!room){
+        throw new BadRequestException('Room is required')
+    }
+
+    const chatRoom = await this.prisma.chatRoom.findUnique({
+        where:{
+            name:room
+        }
+    })
+
+    if(!chatRoom){
+        throw new NotFoundException('Chat room not found')
+    }
+    const messages = await this.prisma.message.findMany({
+        where:{
+            chatRoomId:chatRoom.id
+        },
+        include:{
+            sender:{
+                select:{
+                    id:true,
+                    email:true
+                }
+            }
+        },
+        orderBy:{
+            createdAt:'asc'
+        }
+    })
+    if(messages.length < 1){
+        
+        throw new NotFoundException('No messages found')
+    }
+    return messages
+
+
+}
+
+
+async sendPrivateMessage(room:string,message:string,senderId:number){
+    if(!room || !message){
+        throw new BadRequestException('Room and message are required')
+    }   
+    console.log('sendPrivateMessage')
+    try{
+        const chatRoom = await this.prisma.chatRoom.findUnique({
+            where:{
+                name:room
+            }
+        })
+        if(!chatRoom){
+            throw new NotFoundException('Chat room not found')
+        }
+        const user = await this.prisma.user.findUnique({
+            where:{
+                id:senderId
+            }
+        })
+
+        if(!user){
+            throw new NotFoundException('You are unable to send messages')
+        }
+        const newMessage = await this.prisma.message.create({
+            data:{
+                content:message,
+                senderId,
+                chatRoomId:chatRoom.id
+            }
+        })
+        console.log('Message sent successfully')
+        return newMessage
+    }catch(error){
+        throw new BadRequestException('Error sending message')
+    }
+}
 
 }

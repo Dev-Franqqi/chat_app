@@ -7,10 +7,12 @@ import { usePathname } from 'next/navigation';
 import useWebSocket from "../hooks/useWebSocket";
 import Cookies from 'js-cookie';
 import { io } from 'socket.io-client';
+import { UserData } from "../signup/page";
 import { useRouter } from "next/navigation";
 import getOrCreateChatRoom from "@/components/utility/getOrCreateChatRoom";
 import { MdToken } from "react-icons/md";
-
+import getChatRoomMessages from "@/components/utility/getChatRoomMessage";
+import sendMessage from "@/components/utility/sendMessage";
 export default function ChatWithUser() {
   const router = useRouter();
   const [secUser, setSecUser] = useState('');
@@ -29,12 +31,14 @@ export default function ChatWithUser() {
 
     const token = Cookies.get('token');
     const user = Cookies.get('user');
-
+  
+    
     if (!token || !user) {
       router.push('/');
-      throw new Error('User not authenticated');
+      return
     }
-    setClientId(user);
+    const parsedUser = JSON.parse(user)
+    setClientId(parsedUser.email);
 
     if (!socket) {
       const token = Cookies.get('token');
@@ -83,76 +87,114 @@ export default function ChatWithUser() {
   }, [socket]);
 
   useEffect(() => {
-    const token = Cookies.get('token');
-    const user = Cookies.get('user');
+  const token = Cookies.get('token');
+  let user = Cookies.get('user');
+  if(!user) {
+    router.push('/sigin')
+    return
+  }
+  const parsedUser = JSON.parse(user);
 
-    if (!token || !user) {
-      router.push('/');
-      throw new Error('User not authenticated');
+  // Redirect if user is not authenticated
+  if (!token || !user) {
+    router.push('/');
+    return;
+  }
+
+  // Function to get or create a chat room
+  const getChatRoom = async () => {
+    if (!secUser) return;
+
+    try {
+      const newChatRoom = await getOrCreateChatRoom(token, parsedUser.email, secUser);
+      setChatRoom(newChatRoom);
+      console.log('Chat room:', newChatRoom);
+      socket.emit('join_room', newChatRoom);
+    } catch (error) {
+      console.error('Failed to get chat room:', error);
+      // Handle error (e.g., show error message to user)
     }
-    if (secUser) {
-      async function getChatRoom(token: string, user: string, secUser: string) {
-        const newChatRoom = await getOrCreateChatRoom(token, user, secUser);
-        setChatRoom(newChatRoom);
-        console.log('chat room is: ');
-        console.log(newChatRoom);
-        socket.emit('join_room', newChatRoom);
-      }
-      getChatRoom(token, user, secUser);
+  };
+
+  // Function to fetch messages
+  const fetchMessages = async () => {
+    if (!chatRoom) return; // Wait for chatRoom to be set
+
+    try {
+      console.log('Fetching messages...');
+      const messages = await getChatRoomMessages(token, chatRoom);
+      console.log('Fetched messages:', messages);
+      const refinedMessages = messages.map((message) => ({
+        message: message.content,
+        clientId: message.sender.email,
+        type: 'message',
+      }));
+      setMessages(refinedMessages);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      // Handle error (e.g., show error message to user)
     }
-  }, [secUser]);
+  };
+
+  // Execute async operations
+  getChatRoom();
+  fetchMessages();
+}, [secUser, chatRoom]);
+
+
 
   useEffect(() => {
     console.log('Messages updated:', messages);
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
+
+
+  const sendPrivateMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!socket) {
       throw new Error('Socket not connected');
     }
     if (!message.trim()) return;
-    try {
-      const user = Cookies.get('user');
+  
+      const user = Cookies.get('user'); 
+      
       const token = Cookies.get('token');
       if (!user || !token) {
         router.push('/');
         throw new Error('User not authenticated');
+        
       }
-      if (!chatRoom) {
-        const newChatRoom = await getOrCreateChatRoom(token, user, secUser);
-        if (!newChatRoom) {
-          console.log('No chat room found');
-        }
-        console.log('chat room is: ');
-        console.log(newChatRoom);
-        setChatRoom(newChatRoom);
-        console.log(chatRoom);
-        socket.emit('join_room', chatRoom);
-        socket.emit('privateMessage', {
-          room: `${chatRoom}`,
-          message: message,
-        });
-        setMessage('');
-        return;
-      }
-      socket.emit('privateMessage', {
-        room: `${chatRoom}`,
-        message: message,
-      });
-      setMessage('');
-      return;
-    } catch (error) {
-      console.log(error);
-      setMessage('');
-    }
+      
+        
+          console.log(chatRoom);
+        
+          socket.emit('privateMessage', {
+            room: `${chatRoom}`,
+            message: message,
+          });
+          const parsedUser = JSON.parse(user);
+          try{
+
+            const messageSent = await sendMessage(token, chatRoom, message, parsedUser.id);
+            console.log('Message sent:', messageSent);
+            setMessage('');
+          }
+          catch(error:any){
+            throw new Error(error.message);
+          }
+        
+      
+      
+    
   };
+
+
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage(e as any);
+      sendPrivateMessage(e as any);
     }
   };
 
@@ -206,13 +248,13 @@ export default function ChatWithUser() {
 
         {/* Input Form */}
         <form
-          onSubmit={sendMessage}
+          onSubmit={sendPrivateMessage}
           className="w-full bg-white h-16 flex items-center px-4 shadow-lg sticky bottom-0 z-10 border-t border-gray-200"
         >
           <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             type="text"
             placeholder="Type a message..."
             className="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#8670FD] text-sm"

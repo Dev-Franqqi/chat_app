@@ -50,9 +50,9 @@ export default function Signin(){
                         throw new Error(errorData.message || "Something went wrong");
                     }
                 const data:UserData = await response.json()
-      
+                console.log(data)
                 Cookies.set('token',data.token)
-                Cookies.set('user',email)
+                Cookies.set('user',JSON.stringify(data.user))
                 console.log(data)
                 setUser(data)
                 setLoading(false)

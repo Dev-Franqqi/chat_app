@@ -65,7 +65,7 @@ export default function Signup(){
                 }
             const data:UserData = await response.json()
             Cookies.set("token",data.token)
-            Cookies.set('user',email)
+            Cookies.set('user',JSON.stringify(data.user))
 
             console.log(data)
             setUser(data)
