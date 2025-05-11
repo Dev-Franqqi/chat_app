@@ -4,13 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef, FormEvent } from "react";
 import { usePathname } from 'next/navigation';
-import useWebSocket from "../hooks/useWebSocket";
 import Cookies from 'js-cookie';
 import { io } from 'socket.io-client';
-import { UserData } from "../signup/page";
 import { useRouter } from "next/navigation";
 import getOrCreateChatRoom from "@/components/utility/getOrCreateChatRoom";
-import { MdToken } from "react-icons/md";
 import getChatRoomMessages from "@/components/utility/getChatRoomMessage";
 import sendMessage from "@/components/utility/sendMessage";
 export default function ChatWithUser() {
@@ -78,19 +75,19 @@ export default function ChatWithUser() {
       socket?.off('privateMessage', handlePrivateMessage);
       socket?.off('your_id', handleId);
     };
-  }, [pathname, socket]);
+  }, [pathname, socket,router, chatRoom]);
 
   useEffect(() => {
     if (socket?.connected) {
       console.log('Socket connected');
     }
-  }, [socket]);
+  }, [socket,chatRoom,router]);
 
   useEffect(() => {
   const token = Cookies.get('token');
-  let user = Cookies.get('user');
+  const user = Cookies.get('user');
   if(!user) {
-    router.push('/sigin')
+    router.push('/signin')
     return
   }
   const parsedUser = JSON.parse(user);
@@ -146,7 +143,7 @@ export default function ChatWithUser() {
   useEffect(() => {
     console.log('Messages updated:', messages);
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages,router,socket]);
 
 
 
